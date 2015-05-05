@@ -1,0 +1,26 @@
+
+<div class="col-xs-12 col-sm-12 col-md-12">
+			<div class="box box-solid box-primary">
+				<div class="box-header">
+					<h3 class="box-title">#i18n{documentimport.import_documentimport.label.title}: </h3>
+               			 </div>
+				<div class="box-body"> 
+
+					<div class="form-group alert alert-error">
+						<div>${str_error}</div>
+						<div>#i18n{documentimport.import_documentimport.label.nb.error}: ${str_nbr_error}</div>
+						
+						<div>#i18n{documentimport.import_documentimport.label.nb.line.not.insert.bdd}: ${str_nbr_error} (correspond aux lignes en erreur)</div>
+						
+					</div>
+					<div class="form-group alert alert-warning">
+						<div>${str_warning}</div>
+						<div>#i18n{documentimport.import_documentimport.label.nb.warning}: ${str_nbr_warning}</div>
+					</div>
+					<div class="form-group alert alert-success">
+						<div>#i18n{documentimport.import_documentimport.label.nb.line.read}: ${str_nbr_line - 1} (sans l'entete)</div>
+						<div>#i18n{documentimport.import_documentimport.label.nb.line.insert.bdd}: ${str_nbr_line - str_nbr_error - 1}</div>
+					</div>
+				</div>
+			</div>
+</div>

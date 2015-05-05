@@ -1,0 +1,57 @@
+<#macro tabs tab >
+<div>
+    <ul class="nav nav-tabs">
+    </ul>
+</div>
+</#macro>
+
+<div class="row">
+<form class="form-horizontal" method="post" action="jsp/admin/plugins/documentimport/DoImportCsvFile.jsp" enctype="multipart/form-data">
+	<div class="col-xs-12 col-sm-12 col-md-12">
+			<div class="box box-solid box-primary">
+				<div class="box-header">
+					<h3 class="box-title">#i18n{documentimport.import_documentimport_record.label_file}: </h3>
+               			 </div>
+				<div class="box-body"> 
+				
+						<!-- 	<div class="form-group">
+								<label class="control-label col-xs-12 col-sm-2 col-md-2" for="document_title"> #i18n{documentimport.import_documentimport.label.space}* : </label>
+								<div class="col-xs-12 col-sm-10 col-md-10">
+									 <select name="spaceDocument">
+										<#list document_spaces_list?sort_by('name') as space>
+										    <option value="${space.id!}">${space.name!}</option>
+										</#list>
+				    					</select>
+								</div>
+							</div>
+						-->
+							<div class="form-group">
+								<label class="control-label col-xs-12 col-sm-2 col-md-2" for="document_title"> #i18n{documentimport.import_documentimport.label.type}* : </label>
+								<div class="col-xs-12 col-sm-10 col-md-10">
+									 <select name="codeDocument">
+										<#list document_types_list?sort_by('name') as type>
+										    <option value="${type.code}">${type.name}</option>
+										</#list>
+				    					</select>
+								</div>
+							</div>
+							
+							
+							<div class="form-group">
+								<label class="control-label col-xs-12 col-sm-2 col-md-2" for="document_title">#i18n{documentimport.import_documentimport.label.file} * : </label>
+								<div class="col-xs-12 col-sm-10 col-md-10">
+									<input type= "file" name= "file_import" id= "file_import" required>
+								</div>
+							</div>
+							<div class="form-group">
+	  							<div class="col-sm-offset-2 col-sm-10">
+							
+									<input class= "btn btn-primary btn-flat" type="submit" class="btn btn-default btn-sm" data-widget="collapse"> </input>
+								</div>
+							</div>
+
+			       </div>
+			</div>
+	</div>
+</form>
+</div>
