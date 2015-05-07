@@ -486,7 +486,11 @@ public class DocumentimportService {
     	
     	
     	if(nameSpaceParent != null || nameSpaceFils!= null ){
-	    	List<DocumentSpace> docSpace= DocumentSpaceHome.findChilds(Integer.parseInt(getIdSpaceParent(nameSpaceParent)));
+    		String ident= getIdSpaceParent(nameSpaceParent);
+    		if(ident == null){
+    			return -1;
+    		}
+	    	List<DocumentSpace> docSpace= DocumentSpaceHome.findChilds(Integer.parseInt(ident));
 	    	
 	    	for(DocumentSpace item: docSpace ){
 	    		
