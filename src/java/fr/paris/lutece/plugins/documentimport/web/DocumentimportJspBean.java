@@ -228,7 +228,8 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	    	                	documentError.getError(  ).append( "<br/>" );
 	    	                	documentError.setCountLineFailure( documentError.getCountLineFailure(  ) + 1 );
 	    	                	
-	    	                	return AdminMessageService.getMessageUrl( request,  MESSAGE_ERROR_CSV_HEAD, AdminMessage.TYPE_STOP );
+	    	                	 Object[] param = { attributFail };
+	    	                	return AdminMessageService.getMessageUrl( request,  MESSAGE_ERROR_CSV_HEAD, param,AdminMessage.TYPE_STOP );
 	                		} 		
 	                		
 	                		firstLine= false;
@@ -381,10 +382,14 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	     */
 	    private String checkHead(String [] requiredAttributs, String [] head, HttpServletRequest request){
 	    	
-	    	
+	    	List<String> headReaded= new ArrayList<String>();
+	    	for (String element: head){
+	    		
+	    		headReaded.add(element.trim());
+	    	}
 	    	for (String attribut: requiredAttributs){
 	    		
-	    		if (!Arrays.asList(head).contains(attribut)) {
+	    		if (!headReaded.contains(attribut)) {
 	    			
 	    			return attribut;
 	                	
