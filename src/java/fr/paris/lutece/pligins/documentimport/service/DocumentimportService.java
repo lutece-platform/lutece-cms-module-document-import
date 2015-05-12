@@ -24,6 +24,7 @@ import fr.paris.lutece.plugins.document.business.spaces.DocumentSpaceHome;
 import fr.paris.lutece.plugins.document.service.AttributeManager;
 import fr.paris.lutece.plugins.document.service.AttributeService;
 import fr.paris.lutece.plugins.document.service.DocumentException;
+import fr.paris.lutece.plugins.document.service.DocumentService;
 import fr.paris.lutece.plugins.document.service.metadata.MetadataHandler;
 import fr.paris.lutece.plugins.document.service.spaces.SpaceResourceIdService;
 import fr.paris.lutece.plugins.document.utils.IntegerUtils;
@@ -70,7 +71,7 @@ public class DocumentimportService {
      * @param locale The locale
      * @return data of document object
      */
-    public  String  getDocumentData(HttpServletRequest mRequest, Document document,  HashMap<String,String> valueAttribute, DocumentimporError _docError,Locale locale )
+    public  String  getDocumentData(HttpServletRequest mRequest, Document document,  HashMap<String,String> valueAttribute, DocumentimporError _docError,Locale locale, AdminUser user )
     {
         String strDocumentTitle = valueAttribute.get(DocumentImport.PARAMETER_TITLE);
         String strDocumentSummary = valueAttribute.get(DocumentImport.PARAMETER_SUMMARY);
@@ -269,7 +270,7 @@ public class DocumentimportService {
         document.setCategories( listCategories );
 
         try {
-			this.createDocument(document);
+			this.createDocument(document, user);
 			
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
@@ -443,13 +444,15 @@ public class DocumentimportService {
      * @param user The user doing the action
      * @throws DocumentException raise when error occurs in event or rule
      */
-    public void createDocument( Document document)
+    public void createDocument( Document document, AdminUser user)
         throws DocumentException
     {
-        document.setId( DocumentHome.newPrimaryKey(  ) );
+    	DocumentService.getInstance().createDocument(document, user);
+       /* document.setId( DocumentHome.newPrimaryKey(  ) );
         document.setDateCreation( new Timestamp( new java.util.Date(  ).getTime(  ) ) );
         document.setDateModification( new Timestamp( new java.util.Date(  ).getTime(  ) ) );
-        DocumentHome.create( document );
+        
+        DocumentHome.create( document );*/
     }
     
     /**

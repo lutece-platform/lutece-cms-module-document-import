@@ -137,7 +137,7 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	        throws AccessDeniedException
 	    {
 	    	
-	    	String[] headCsvFile = null;
+	    	List<String> headCsvFile= new ArrayList<String>();
 	    	boolean firstLine= true;
 	    	
 	    	String strCodeDocument = request.getParameter( PARAMETER_CODE_DOCUMENT );
@@ -215,7 +215,11 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	                    document.setCreatorId( getUser(  ).getUserId(  ) );
 	                	
 	                	if( firstLine){
-	                		headCsvFile= nextLine;
+	                		
+	            	    	for (String element: nextLine){
+	            	    		
+	            	    		headCsvFile.add(element.trim());
+	            	    	}
 	                		String attributFail= checkHead( requiredAttributs, headCsvFile, request );
 	                		if(attributFail != null){
 	                			
@@ -234,7 +238,7 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	                		
 	                		firstLine= false;
 	                		
-	                	}else if ( nextLine.length != headCsvFile.length ){
+	                	}else if ( nextLine.length != headCsvFile.size() ){
 	                		
 		                	documentError.getError(  ).append( I18nService.getLocalizedString( PROPERTY_ERROR_LINE, getLocale(  ) ) );
 		                	documentError.getError(  ).append( documentError.getCountLine(  ) );
@@ -256,7 +260,7 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	                    {*/
 	                        for ( int i = 0; i < nextLine.length; i++ )
 	                        {
-	                        	valueCSVfile.put(headCsvFile[i], nextLine[i]);
+	                        	valueCSVfile.put(headCsvFile.get(i), nextLine[i]);
 	                        	
 	                        }
 	                        
@@ -284,7 +288,7 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	                        
 	                		}else{
 	                        	document.setSpaceId( idSpace );                      
-		                        String succes= DocumentimportService.getInstance().getDocumentData(request, document, valueCSVfile, documentError,getLocale(  ));
+		                        String succes= DocumentimportService.getInstance().getDocumentData(request, document, valueCSVfile, documentError,getLocale(  ), getUser( ));
 		                        
 		                        if(succes == null){
 		                        	attributValue.add(valueCSVfile.get(DocumentImport.IDENTIFIANT));
@@ -380,16 +384,12 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	     * @param request
 	     * @return 
 	     */
-	    private String checkHead(String [] requiredAttributs, String [] head, HttpServletRequest request){
+	    private String checkHead(String [] requiredAttributs, List<String> head, HttpServletRequest request){
 	    	
-	    	List<String> headReaded= new ArrayList<String>();
-	    	for (String element: head){
-	    		
-	    		headReaded.add(element.trim());
-	    	}
+	    
 	    	for (String attribut: requiredAttributs){
 	    		
-	    		if (!headReaded.contains(attribut)) {
+	    		if (!head.contains(attribut)) {
 	    			
 	    			return attribut;
 	                	
