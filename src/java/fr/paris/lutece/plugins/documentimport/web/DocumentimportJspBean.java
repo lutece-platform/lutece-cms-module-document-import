@@ -260,7 +260,7 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	                    {*/
 	                        for ( int i = 0; i < nextLine.length; i++ )
 	                        {
-	                        	valueCSVfile.put(headCsvFile.get(i), nextLine[i]);
+	                        	valueCSVfile.put(headCsvFile.get(i), nextLine[i].trim());
 	                        	
 	                        }
 	                        
