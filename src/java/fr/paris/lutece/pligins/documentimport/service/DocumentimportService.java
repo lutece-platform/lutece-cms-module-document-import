@@ -290,151 +290,155 @@ public class DocumentimportService {
      * @return an admin message if error or null else
      */
     private  String setAttribute( DocumentAttribute attribute, Document document, HashMap<String,String> valueAttribute , DocumentimporError _docError,
-        Locale locale )
-    {
-        String strParameterStringValue = valueAttribute.get(attribute.getName());
-       // FileItem fileParameterBinaryValue = mRequest.getFile( attribute.getCode(  ) );
-       // String strIsUpdatable = mRequest.getParameter( PARAMETER_ATTRIBUTE_UPDATE + attribute.getCode(  ) );
-       // String strToResize = mRequest.getParameter( attribute.getCode(  ) + PARAMETER_CROPPABLE );
-       // boolean bIsUpdatable = ( ( strIsUpdatable == null ) || strIsUpdatable.equals( "" ) ) ? false : true;
-       // boolean bToResize = ( ( strToResize == null ) || strToResize.equals( "" ) ) ? false : true;
-
-        if ( strParameterStringValue != null ) // If the field is a string
+            Locale locale )
         {
-            // Check for mandatory value
-            if ( attribute.isRequired(  ) && strParameterStringValue.trim(  ).equals( "" ) )
+            String strParameterStringValue = StringUtils.isEmpty(valueAttribute.get(attribute.getName()))  ? "" : valueAttribute.get(attribute.getName());
+           // FileItem fileParameterBinaryValue = mRequest.getFile( attribute.getCode(  ) );
+           // String strIsUpdatable = mRequest.getParameter( PARAMETER_ATTRIBUTE_UPDATE + attribute.getCode(  ) );
+           // String strToResize = mRequest.getParameter( attribute.getCode(  ) + PARAMETER_CROPPABLE );
+           // boolean bIsUpdatable = ( ( strIsUpdatable == null ) || strIsUpdatable.equals( "" ) ) ? false : true;
+           // boolean bToResize = ( ( strToResize == null ) || strToResize.equals( "" ) ) ? false : true;
+
+            if ( !StringUtils.isEmpty(strParameterStringValue) ) // If the field is a string
             {
-            	
-            	 _docError.getWarning(  ).append( I18nService.getLocalizedString( PROPERTY_WARNING_LINE, locale ) );
-            	 _docError.getWarning(  ).append( _docError.getCountLine(  ) );
-            	 _docError.getWarning(  ).append( " > " );
-            	 _docError.getWarning(  )
-                              .append( attribute.getName(  )  + " :" +  I18nService.getLocalizedString( MESSAGE_ERROR_CSV_MANDATORY_FIELD  ,
-                            		  locale));
-            	 _docError.getWarning(  ).append( "<br/>" );
-            	 _docError.setCountWarning(_docError.getCountWarning( ) + 1 );
-                return null;
-            }
-
-            // Check for specific attribute validation
-            AttributeManager manager = AttributeService.getInstance(  ).getManager( attribute.getCodeAttributeType(  ) );
-            String strValidationErrorMessage = manager.validateValue( attribute.getId(  ), strParameterStringValue,
-                    locale );
-
-            if ( strValidationErrorMessage != null )
-            {
-	                
-	             _docError.getError().append( I18nService.getLocalizedString( PROPERTY_ERROR_LINE, locale ) );
-	           	 _docError.getError(  ).append( _docError.getCountLine(  ) );
-	           	 _docError.getError(  ).append( " > " );
-	           	 _docError.getError(  ).append( attribute.getName(  )+": " + strValidationErrorMessage );
-	           	 _docError.getError(  ).append( "<br/>" );
-	           	 
-	           	_docError.setCountLineFailure( _docError.getCountLineFailure(  ) + 1 );
-	               
-	           	 return ERROR;
-	            	
-            }
-
-            attribute.setTextValue( strParameterStringValue );
-        }
-    /*    else if ( fileParameterBinaryValue != null ) // If the field is a file
-        {
-            attribute.setBinary( true );
-
-            String strContentType = fileParameterBinaryValue.getContentType(  );
-            byte[] bytes = fileParameterBinaryValue.get(  );
-            String strFileName = fileParameterBinaryValue.getName(  );
-            String strExtension = FilenameUtils.getExtension( strFileName );
-
-            AttributeManager manager = AttributeService.getInstance(  ).getManager( attribute.getCodeAttributeType(  ) );
-
-            if ( !bIsUpdatable )
-            {
-                // there is no new value then take the old file value
-                DocumentAttribute oldAttribute = document.getAttribute( attribute.getCode(  ) );
-
-                if ( ( oldAttribute != null ) && ( oldAttribute.getBinaryValue(  ) != null ) &&
-                        ( oldAttribute.getBinaryValue(  ).length > 0 ) )
+                // Check for mandatory value
+                if ( attribute.isRequired(  ) && strParameterStringValue.trim(  ).equals( "" ) )
                 {
-                    bytes = oldAttribute.getBinaryValue(  );
-                    strContentType = oldAttribute.getValueContentType(  );
-                    strFileName = oldAttribute.getTextValue(  );
-                    strExtension = FilenameUtils.getExtension( strFileName );
-                }
-            }
-
-            List<AttributeTypeParameter> parameters = manager.getExtraParametersValues( locale, attribute.getId(  ) );
-
-            String extensionList = StringUtils.EMPTY;
-
-            if ( CollectionUtils.isNotEmpty( parameters ) &&
-                    CollectionUtils.isNotEmpty( parameters.get( 0 ).getValueList(  ) ) )
-            {
-                extensionList = parameters.get( 0 ).getValueList(  ).get( 0 );
-            }
-
-            // Check for mandatory value
-            if ( attribute.isRequired(  ) && ( ( bytes == null ) || ( bytes.length == 0 ) ) )
-            {
-                return AdminMessageService.getMessageUrl( mRequest, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
-            }
-            else if ( StringUtils.isNotBlank( extensionList ) && !extensionList.contains( strExtension ) )
-            {
-                Object[] params = new Object[2];
-                params[0] = attribute.getName(  );
-                params[1] = extensionList;
-
-                return AdminMessageService.getMessageUrl( mRequest, MESSAGE_EXTENSION_ERROR, params,
-                    AdminMessage.TYPE_STOP );
-            }
-
-            // Check for specific attribute validation
-            String strValidationErrorMessage = manager.validateValue( attribute.getId(  ), strFileName, locale );
-
-            if ( strValidationErrorMessage != null )
-            {
-                String[] listArguments = { attribute.getName(  ), strValidationErrorMessage };
-
-                return AdminMessageService.getMessageUrl( mRequest, MESSAGE_ATTRIBUTE_VALIDATION_ERROR, listArguments,
-                    AdminMessage.TYPE_STOP );
-            }
-
-       /*     if ( bToResize && !ArrayUtils.isEmpty( bytes ) )
-            {
-                // Resize image
-                String strWidth = mRequest.getParameter( attribute.getCode(  ) + PARAMETER_WIDTH );
-
-                if ( StringUtils.isBlank( strWidth ) || !StringUtils.isNumeric( strWidth ) )
-                {
-                    String[] listArguments = 
-                        {
-                            attribute.getName(  ),
-                            I18nService.getLocalizedString( MESSAGE_ATTRIBUTE_WIDTH_ERROR, mRequest.getLocale(  ) )
-                        };
-
-                    return AdminMessageService.getMessageUrl( mRequest, MESSAGE_ATTRIBUTE_VALIDATION_ERROR,
-                        listArguments, AdminMessage.TYPE_STOP );
+                	
+                	 _docError.getWarning(  ).append( I18nService.getLocalizedString( PROPERTY_WARNING_LINE, locale ) );
+                	 _docError.getWarning(  ).append( _docError.getCountLine(  ) );
+                	 _docError.getWarning(  ).append( " > " );
+                	 _docError.getWarning(  )
+                                  .append( attribute.getName(  )  + " :" +  I18nService.getLocalizedString( MESSAGE_ERROR_CSV_MANDATORY_FIELD  ,
+                                		  locale));
+                	 _docError.getWarning(  ).append( "<br/>" );
+                	 _docError.setCountWarning(_docError.getCountWarning( ) + 1 );
+                    return null;
                 }
 
-                try
+                // Check for specific attribute validation
+                AttributeManager manager = AttributeService.getInstance(  ).getManager( attribute.getCodeAttributeType(  ) );
+                if ( attribute.getCodeAttributeType().equalsIgnoreCase("numerictext") && strParameterStringValue.trim(  ).equals( "" ) )
                 {
-                    bytes = ImageUtils.resizeImage( bytes, Integer.valueOf( strWidth ) );
+                	strParameterStringValue= "0";
                 }
-                catch ( IOException e )
+                String strValidationErrorMessage = manager.validateValue( attribute.getId(  ), strParameterStringValue,
+                        locale );
+
+                if ( strValidationErrorMessage != null )
                 {
-                    return AdminMessageService.getMessageUrl( mRequest, MESSAGE_ATTRIBUTE_RESIZE_ERROR,
+    	                
+    	             _docError.getError().append( I18nService.getLocalizedString( PROPERTY_ERROR_LINE, locale ) );
+    	           	 _docError.getError(  ).append( _docError.getCountLine(  ) );
+    	           	 _docError.getError(  ).append( " > " );
+    	           	 _docError.getError(  ).append( attribute.getName(  )+": " + strValidationErrorMessage );
+    	           	 _docError.getError(  ).append( "<br/>" );
+    	           	 
+    	           	_docError.setCountLineFailure( _docError.getCountLineFailure(  ) + 1 );
+    	               
+    	           	 return ERROR;
+    	            	
+                }
+            }
+             	 attribute.setTextValue( strParameterStringValue );
+             	 return null;
+         /*    else if ( fileParameterBinaryValue != null ) // If the field is a file
+            {
+                attribute.setBinary( true );
+
+                String strContentType = fileParameterBinaryValue.getContentType(  );
+                byte[] bytes = fileParameterBinaryValue.get(  );
+                String strFileName = fileParameterBinaryValue.getName(  );
+                String strExtension = FilenameUtils.getExtension( strFileName );
+
+                AttributeManager manager = AttributeService.getInstance(  ).getManager( attribute.getCodeAttributeType(  ) );
+
+                if ( !bIsUpdatable )
+                {
+                    // there is no new value then take the old file value
+                    DocumentAttribute oldAttribute = document.getAttribute( attribute.getCode(  ) );
+
+                    if ( ( oldAttribute != null ) && ( oldAttribute.getBinaryValue(  ) != null ) &&
+                            ( oldAttribute.getBinaryValue(  ).length > 0 ) )
+                    {
+                        bytes = oldAttribute.getBinaryValue(  );
+                        strContentType = oldAttribute.getValueContentType(  );
+                        strFileName = oldAttribute.getTextValue(  );
+                        strExtension = FilenameUtils.getExtension( strFileName );
+                    }
+                }
+
+                List<AttributeTypeParameter> parameters = manager.getExtraParametersValues( locale, attribute.getId(  ) );
+
+                String extensionList = StringUtils.EMPTY;
+
+                if ( CollectionUtils.isNotEmpty( parameters ) &&
+                        CollectionUtils.isNotEmpty( parameters.get( 0 ).getValueList(  ) ) )
+                {
+                    extensionList = parameters.get( 0 ).getValueList(  ).get( 0 );
+                }
+
+                // Check for mandatory value
+                if ( attribute.isRequired(  ) && ( ( bytes == null ) || ( bytes.length == 0 ) ) )
+                {
+                    return AdminMessageService.getMessageUrl( mRequest, Messages.MANDATORY_FIELDS, AdminMessage.TYPE_STOP );
+                }
+                else if ( StringUtils.isNotBlank( extensionList ) && !extensionList.contains( strExtension ) )
+                {
+                    Object[] params = new Object[2];
+                    params[0] = attribute.getName(  );
+                    params[1] = extensionList;
+
+                    return AdminMessageService.getMessageUrl( mRequest, MESSAGE_EXTENSION_ERROR, params,
                         AdminMessage.TYPE_STOP );
                 }
-            }
 
-       //     attribute.setBinaryValue( bytes );
-            attribute.setValueContentType( strContentType );
-            attribute.setTextValue( strFileName );
-        }*/
+                // Check for specific attribute validation
+                String strValidationErrorMessage = manager.validateValue( attribute.getId(  ), strFileName, locale );
 
-        return null;
-    }
+                if ( strValidationErrorMessage != null )
+                {
+                    String[] listArguments = { attribute.getName(  ), strValidationErrorMessage };
+
+                    return AdminMessageService.getMessageUrl( mRequest, MESSAGE_ATTRIBUTE_VALIDATION_ERROR, listArguments,
+                        AdminMessage.TYPE_STOP );
+                }
+
+           /*     if ( bToResize && !ArrayUtils.isEmpty( bytes ) )
+                {
+                    // Resize image
+                    String strWidth = mRequest.getParameter( attribute.getCode(  ) + PARAMETER_WIDTH );
+
+                    if ( StringUtils.isBlank( strWidth ) || !StringUtils.isNumeric( strWidth ) )
+                    {
+                        String[] listArguments = 
+                            {
+                                attribute.getName(  ),
+                                I18nService.getLocalizedString( MESSAGE_ATTRIBUTE_WIDTH_ERROR, mRequest.getLocale(  ) )
+                            };
+
+                        return AdminMessageService.getMessageUrl( mRequest, MESSAGE_ATTRIBUTE_VALIDATION_ERROR,
+                            listArguments, AdminMessage.TYPE_STOP );
+                    }
+
+                    try
+                    {
+                        bytes = ImageUtils.resizeImage( bytes, Integer.valueOf( strWidth ) );
+                    }
+                    catch ( IOException e )
+                    {
+                        return AdminMessageService.getMessageUrl( mRequest, MESSAGE_ATTRIBUTE_RESIZE_ERROR,
+                            AdminMessage.TYPE_STOP );
+                    }
+                }
+
+           //     attribute.setBinaryValue( bytes );
+                attribute.setValueContentType( strContentType );
+                attribute.setTextValue( strFileName );
+            }*/
+
+          //  return null;
+        }
 
     
     /**

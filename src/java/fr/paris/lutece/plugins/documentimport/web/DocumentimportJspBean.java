@@ -177,7 +177,7 @@ public class DocumentimportJspBean extends PluginAdminPageJspBean{
 	        try
 	        {
 	            InputStreamReader inputStreamReader = new InputStreamReader( fileItem.getInputStream(  ) );
-	            CSVReader csvReader = new CSVReader( inputStreamReader, strCsvSeparator );
+	            CSVReader csvReader = new CSVReader( inputStreamReader, strCsvSeparator, (char) 7 );
 
 	            String[] nextLine;
 
